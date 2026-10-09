@@ -1,0 +1,91 @@
+Criptografia em Duas Camadas em C (Cifra de César + Progressão Aritmética)
+
+Disciplina: Algoritmo e Pensamento Computacional
+Professor: Francisco de Assis Cavallaro
+Integrantes: Giovanni Ferreira dos Santos - 48091341, João Victor Fava - 47454148, Raphael David Silva Freitas - 47850922, Ruan Silva Costa - 47538368
+
+1. Escolhas do grupo
+| Item | Valor |
+| Palavra secreta (exemplo) | 'coracao' (7 letras) |
+| SHIFT | 3 |
+| Sequência | Progressão Aritmética (PA): a1 = 1, r = 2 → 1, 3, 5, 7, 9, 11, 13... |
+
+2. Como o programa funciona
+Cada letra passa por duas camadas:
+
+- Camada 1 (Cifra de César): deslocamento fixo = SHIFT.
+- Camada 2 (sequência): deslocamento dinâmico = termo da PA, 'aN = a1 + (n-1) x r'.
+
+Deslocamento total da letra i = 'SHIFT + PA[i]', dentro do alfabeto de 26 letras ('% 26').
+
+Cada letra vira um número ('a' = 0 ... 'z' = 25) ao subtrair 'a' do valor ASCII
+('a' = 97), recebe o deslocamento total e é convertida de volta para letra.
+
+Cálculo do exemplo ('coracao', SHIFT 3)
+| Letra | Posição | PA | Deslocamento (3 + PA) | Nova posição | Cifrada |
+|---|---|---|---|---|---|
+| c | 2 | 1 | 4 | 6 | g |
+| o | 14 | 3 | 6 | 20 | u |
+| r | 17 | 5 | 8 | 25 | z |
+| a | 0 | 7 | 10 | 10 | k |
+| c | 2 | 9 | 12 | 14 | o |
+| a | 0 | 11 | 14 | 14 | o |
+| o | 14 | 13 | 16 | 30 % 26 = 4 | e |
+
+Resultado: 'guzkooe'
+
+3. Como compilar e executar
+
+gcc -o criptografia criptografia.c
+./criptografia
+
+Entradas: palavra (até 15 letras minúsculas, sem acentos) e SHIFT (inteiro positivo).
+
+Arquivos gerados na execução:
+
+'resultado_criptografia.txt'
+
+Palavra codificada: guzkooe | SHIFT: 3 | Tipo: PA | Letras: 7
+
+'log_execucao.txt' (uma linha nova a cada execução)
+
+Criptografou 'coracao' com SHIFT 3 -> 'guzkooe'
+
+
+4. Taxonomia de Bloom no projeto
+| Nível | O que foi feito |
+|---|---|
+| Lembrar | Alfabeto (a–z), valores ASCII ('a' = 97) e a fórmula da PA |
+| Compreender | O SHIFT desloca cada letra no alfabeto; a PA faz o deslocamento mudar a cada posição |
+| Aplicar | Implementação em C das duas camadas, com gravação de arquivo e log |
+| Analisar | Comparação com outras sequências (seção 5) |
+| Avaliar | Julgamento da segurança da cifra (seção 6) |
+| Criar | Sistema completo e personalizável: basta mudar a palavra, o SHIFT, o '1' e o '2' da PA |
+
+5. Análise: comparação entre sequências
+Mesma palavra ('coracao') e mesmo SHIFT (3), trocando só a sequência:
+
+| Sequência | Termos usados | Palavra cifrada | Letras diferentes na cifra |
+|---|---|---|---|
+| PA (a1=1, r=2) | 1, 3, 5, 7, 9, 11, 13 | guzkooe | 6 |
+| PG (a1=1, q=2) | 1, 2, 4, 8, 16, 32, 64 | gtylvjd | 7 |
+| Fibonacci | 1, 1, 2, 3, 5, 8, 13 | gswgkle | 6 |
+| Primos | 2, 3, 5, 7, 11, 13, 17 | huzkqqi | 6 |
+
+Observações:
+- Na PA, os deslocamentos nunca se repetem dentro do alfabeto até a 13ª letra,
+  mas com r = 2 e módulo 26, a 14ª letra repete o deslocamento da 1ª (14 e 1 geram o mesmo valor mod 26).
+- Em Fibonacci, os dois primeiros termos são iguais (1, 1), então as duas primeiras letras recebem o mesmo deslocamento.
+- Na PG com q = 2, os termos crescem rápido e passam a se repetir em ciclo após o módulo 26.
+- Com uma única palavra de 7 letras a amostra é pequena; a diferença entre as sequências neste teste é de apenas uma letra.
+
+6. Avaliação de segurança
+- A PA é simples e previsível: quem descobrir que é uma PA só precisa descobrir a1, r e o SHIFT.
+- Como o alfabeto tem 26 letras, o espaço de busca é pequeno: um computador testa todas as combinações de SHIFT, a1 e r em milissegundos.
+- A análise de frequência de letras também ajuda a quebrar a cifra em textos longos.
+- Conclusão: o projeto é didático, e a segunda camada torna a cifra mais difícil que o César puro, mas não segura para uso real.
+
+7. Limitações
+- Aceita só letras minúsculas sem acento, com SHIFT positivo.
+- Não há validação de entrada.
+- Este programa só criptografa (não há função de descriptografar).
